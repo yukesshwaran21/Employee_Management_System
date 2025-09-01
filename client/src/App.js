@@ -10,6 +10,7 @@ import AttendancePage from './pages/AttendancePage';
 import PayrollPage from './pages/PayrollPage';
 import LeavePage from './pages/LeavePage';
 import NotFound from './pages/NotFound';
+import './styles/globals.css';
 
 function App() {
   return (
