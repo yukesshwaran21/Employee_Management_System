@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -10,6 +11,7 @@ const UserSchema = new mongoose.Schema({
   department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department' },
   designation: { type: String },
   status: { type: String, enum: ['pending', 'active', 'inactive', 'rejected'], default: 'pending' },
+  isEmailVerified: { type: Boolean, default: false },
   profilePhoto: { type: String },
   leaveBalance: {
     casual: { type: Number, default: 12 },
@@ -18,6 +20,7 @@ const UserSchema = new mongoose.Schema({
   },
   baseSalary: { type: Number, default: 0 },
   shift: { type: mongoose.Schema.Types.ObjectId, ref: 'Shift' },
+  isActive: { type: Boolean, default: true }, // for soft delete
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

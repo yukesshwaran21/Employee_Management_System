@@ -1,3 +1,15 @@
+// Get calendar data for team availability
+exports.getCalendar = async (req, res) => {
+  const leaves = await Leave.find({ status: 'approved' }).populate('user');
+  const calendar = leaves.map(l => ({
+    user: l.user.name,
+    type: l.type,
+    from: l.from,
+    to: l.to,
+    days: l.days
+  }));
+  res.json(calendar);
+};
 const Leave = require('../models/Leave');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');

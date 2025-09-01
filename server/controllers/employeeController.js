@@ -1,3 +1,9 @@
+// Get employees by designation
+exports.getByDesignation = async (req, res) => {
+  const { designation } = req.query;
+  const employees = await User.find({ designation });
+  res.json(employees);
+};
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
 const AuditLog = require('../models/AuditLog');
@@ -20,10 +26,10 @@ exports.approveEmployee = async (req, res) => {
 exports.deactivateEmployee = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ message: 'User not found' });
-  user.status = 'inactive';
+  user.isActive = false;
   await user.save();
   await AuditLog.create({ action: `Admin deactivated employee ${user.name}`, performedBy: req.user._id });
-  res.json({ message: 'Employee deactivated' });
+  res.json({ message: 'Employee deactivated (soft delete)' });
 };
 
 exports.getMyProfile = async (req, res) => {

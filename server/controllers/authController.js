@@ -8,7 +8,12 @@ exports.register = async (req, res) => {
     const { name, email, password, phone, department, designation } = req.body;
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: 'User already exists' });
-    user = new User({ name, email, password, phone, department, designation });
+    // Enforce only one super-admin
+    if (req.body.role === 'super-admin') {
+      const superAdminExists = await User.findOne({ role: 'super-admin' });
+      if (superAdminExists) return res.status(403).json({ message: 'Super-admin already exists' });
+    }
+    user = new User({ name, email, password, phone, department, designation, role: req.body.role });
     await user.save();
     // Email verification token
     const verifyToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -28,11 +33,12 @@ exports.verifyEmail = async (req, res) => {
   try {
     const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
-    if (!user) return res.status(400).json({ message: 'Invalid token' });
-    if (user.status !== 'pending') return res.status(400).json({ message: 'Already verified' });
-    user.status = 'pending'; // Still needs admin approval
-    await user.save();
-    res.json({ message: 'Email verified. Awaiting admin approval.' });
+  if (!user) return res.status(400).json({ message: 'Invalid token' });
+  if (user.isEmailVerified) return res.status(400).json({ message: 'Already verified' });
+  user.isEmailVerified = true;
+  user.status = 'pending'; // Still needs admin approval
+  await user.save();
+  res.json({ message: 'Email verified. Awaiting admin approval.' });
   } catch (err) {
     res.status(400).json({ message: 'Invalid or expired token' });
   }
