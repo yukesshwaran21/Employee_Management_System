@@ -1,38 +1,60 @@
-.App {
-  text-align: center;
-}
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.auth-container, .dashboard-container, .profile-container, .attendance-container, .payroll-container, .leave-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.auth-container h2, .dashboard-container h2, .profile-container h2, .attendance-container h2, .payroll-container h2, .leave-container h2 {
+  margin-bottom: 1rem;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.auth-container input, .profile-form input, .leave-form input, .leave-form select {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-
-.App-link {
-  color: #61dafb;
+button {
+  padding: 0.5rem 1.5rem;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button:disabled {
+  background: #aaa;
+}
+.error {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+.success {
+  color: #388e3c;
+  margin-bottom: 1rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+table th, table td {
+  border: 1px solid #eee;
+  padding: 0.5rem;
+  text-align: left;
+}
+table th {
+  background: #f5f5f5;
+}
+.dashboard-info ul {
+  list-style: none;
+  padding: 0;
+}
+.dashboard-info ul li {
+  margin-bottom: 0.5rem;
 }
