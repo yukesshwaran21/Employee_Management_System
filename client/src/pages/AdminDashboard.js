@@ -44,34 +44,37 @@ function AdminDashboard() {
     <div className="dashboard-wrapper">
       <div className="dashboard-container admin-dashboard fade-in">
         {/* Admin Dashboard Header */}
-        <div className="dashboard-header">
-          <div className="welcome-section">
-            <div className="user-info">
-              <h1 className="dashboard-title">Admin Dashboard</h1>
-              <div className="welcome-text">Welcome back, {user.name}! 👋</div>
-              <div className="user-role">
-                <span>🛡️</span>
-                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            <div className="dashboard-header">
+              <div className="welcome-section">
+                <div className="user-info">
+                  <h1 className="dashboard-title">Admin Dashboard</h1>
+                  <div className="welcome-text">Welcome back, {user.name}! 👋</div>
+                  <div className="user-role">
+                    <span>🛡️</span>
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </div>
+                </div>
+                <div className="dashboard-actions">
+                  <button className="btn-notification" title="Notifications" style={{ marginRight: '12px' }}>
+                    <span role="img" aria-label="Notifications">🔔</span>
+                  </button>
+                  <button 
+                    className="btn-secondary" 
+                    onClick={() => navigate('/profile')}
+                  >
+                    <span>👤</span>
+                    My Profile
+                  </button>
+                  <button 
+                    className="btn-primary" 
+                    onClick={handleLogout}
+                  >
+                    <span>�</span>
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="dashboard-actions">
-              <button 
-                className="btn-secondary" 
-                onClick={() => navigate('/profile')}
-              >
-                <span>👤</span>
-                My Profile
-              </button>
-              <button 
-                className="btn-primary" 
-                onClick={handleLogout}
-              >
-                <span>🚪</span>
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Admin Navigation Menu */}
         <div className="navigation-menu">
