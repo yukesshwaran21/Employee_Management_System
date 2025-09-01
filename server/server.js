@@ -1,8 +1,8 @@
+
 require('dotenv').config();
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
-const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -13,7 +13,6 @@ connectDB();
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use(morgan('dev'));
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -35,7 +34,7 @@ app.use('/api/notification', require('./routes/notification'));
 
 // Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error(err.message || err);
   res.status(500).json({ message: 'Server Error' });
 });
 
