@@ -21,7 +21,18 @@ function ProfilePage() {
   }
 
   const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    if (e.target.type === 'file') {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setForm({ ...form, profilePhoto: reader.result });
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    }
   };
 
   const handleSubmit = async e => {
@@ -219,15 +230,20 @@ function ProfilePage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Profile Photo URL</label>
+              <label className="form-label">Profile Photo</label>
               <input
                 name="profilePhoto"
+                type="file"
+                accept="image/*"
                 className="form-input"
-                value={form.profilePhoto || ''}
                 onChange={handleChange}
-                placeholder="Enter profile photo URL"
                 disabled={!isEditing}
               />
+              {form.profilePhoto && (
+                <div className="profile-photo-preview">
+                  <img src={form.profilePhoto} alt="Preview" style={{ maxWidth: '120px', borderRadius: '8px', marginTop: '8px' }} />
+                </div>
+              )}
             </div>
 
             <div className="form-group">
