@@ -36,24 +36,32 @@ exports.getMyLeaves = async (req, res) => {
 };
 
 exports.decideLeave = async (req, res) => {
-  const { status, adminComment } = req.body;
-  const leave = await Leave.findById(req.params.id).populate('user');
-  if (!leave) return res.status(404).json({ message: 'Leave not found' });
-  leave.status = status;
-  leave.adminComment = adminComment;
-  leave.decidedAt = new Date();
-  await leave.save();
-  if (status === 'approved') {
-    // Deduct leave balance
-    const user = await User.findById(leave.user._id);
-    user.leaveBalance[leave.type] -= leave.days;
-    await user.save();
-    await sendEmail(user.email, 'Leave Approved', `<p>Your leave is approved.</p>`);
-  } else {
-    await sendEmail(leave.user.email, 'Leave Rejected', `<p>Your leave is rejected.</p>`);
+  try {
+    const { status, adminComment } = req.body;
+    const leave = await Leave.findById(req.params.id).populate('user');
+    if (!leave) return res.status(404).json({ message: 'Leave not found' });
+    leave.status = status;
+    leave.adminComment = adminComment;
+    leave.decidedAt = new Date();
+    await leave.save();
+    if (status === 'approved') {
+      // Deduct leave balance
+      const user = await User.findById(leave.user._id);
+      if (!user.leaveBalance || user.leaveBalance[leave.type] === undefined) {
+        throw new Error('User leave balance not set for type: ' + leave.type);
+      }
+      user.leaveBalance[leave.type] -= leave.days;
+      await user.save();
+      await sendEmail(user.email, 'Leave Approved', `<p>Your leave is approved.</p>`);
+    } else {
+      await sendEmail(leave.user.email, 'Leave Rejected', `<p>Your leave is rejected.</p>`);
+    }
+    await AuditLog.create({ action: `Leave ${status} for ${leave.user.name}`, performedBy: req.user._id });
+    res.json({ message: `Leave ${status}` });
+  } catch (err) {
+    console.error('Error in decideLeave:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
   }
-  await AuditLog.create({ action: `Leave ${status} for ${leave.user.name}`, performedBy: req.user._id });
-  res.json({ message: `Leave ${status}` });
 };
 
 exports.getAllLeaves = async (req, res) => {
