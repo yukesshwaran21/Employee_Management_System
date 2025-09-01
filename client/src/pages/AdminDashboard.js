@@ -1,6 +1,12 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route, Link } from 'react-router-dom';
+import EmployeeList from '../components/EmployeeList';
+import PendingApprovals from '../components/PendingApprovals';
+import AttendanceSummary from '../components/AttendanceSummary';
+import OvertimeTrends from '../components/OvertimeTrends';
+import PayrollCost from '../components/PayrollCost';
+import ReportsExports from '../components/ReportsExports';
 import './Dashboard.css';
 
 function AdminDashboard() {
@@ -22,14 +28,24 @@ function AdminDashboard() {
         <p>Welcome, {user.name}</p>
         <p>Role: {user.role}</p>
         <ul>
-          <li><a href="/admin/employees">Total Employees</a></li>
-          <li><a href="/admin/approvals">Pending Approvals</a></li>
-          <li><a href="/admin/attendance">Attendance Summary</a></li>
-          <li><a href="/admin/overtime">Overtime Trends</a></li>
-          <li><a href="/admin/payroll">Monthly Payroll Cost</a></li>
-          <li><a href="/admin/reports">Reports & Exports</a></li>
+          <li><Link to="/admin/employees">Total Employees</Link></li>
+          <li><Link to="/admin/approvals">Pending Approvals</Link></li>
+          <li><Link to="/admin/attendance">Attendance Summary</Link></li>
+          <li><Link to="/admin/overtime">Overtime Trends</Link></li>
+          <li><Link to="/admin/payroll">Monthly Payroll Cost</Link></li>
+          <li><Link to="/admin/reports">Reports & Exports</Link></li>
         </ul>
         <button onClick={handleLogout}>Logout</button>
+      </div>
+      <div style={{ marginTop: '2rem' }}>
+        <Routes>
+          <Route path="/employees" element={<EmployeeList />} />
+          <Route path="/approvals" element={<PendingApprovals />} />
+          <Route path="/attendance" element={<AttendanceSummary />} />
+          <Route path="/overtime" element={<OvertimeTrends />} />
+          <Route path="/payroll" element={<PayrollCost />} />
+          <Route path="/reports" element={<ReportsExports />} />
+        </Routes>
       </div>
     </div>
   );
