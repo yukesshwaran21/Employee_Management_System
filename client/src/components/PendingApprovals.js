@@ -18,12 +18,12 @@ function PendingApprovals() {
       const usersRes = await API.get('/employees');
       setPendingUsers(usersRes.data.filter(u => u.status === 'pending'));
 
-      // Fetch pending leave requests
+      // Fetch all leave requests and filter for pending
       try {
-        const leavesRes = await API.get('/leave/pending');
-        setPendingLeaves(leavesRes.data || []);
+        const leavesRes = await API.get('/leave');
+        setPendingLeaves((leavesRes.data || []).filter(l => l.status === 'pending'));
       } catch (leaveError) {
-        console.log('No pending leaves or endpoint not available');
+        console.log('No leaves or endpoint not available');
         setPendingLeaves([]);
       }
     } catch (error) {
@@ -53,7 +53,7 @@ function PendingApprovals() {
 
   const handleApproveLeave = async (id) => {
     try {
-      await API.put(`/leave/approve/${id}`);
+      await API.put(`/leave/decide/${id}`, { status: 'approved' });
       setPendingLeaves(pendingLeaves.filter(l => l._id !== id));
     } catch (error) {
       console.error('Error approving leave:', error);
@@ -62,7 +62,7 @@ function PendingApprovals() {
 
   const handleRejectLeave = async (id) => {
     try {
-      await API.put(`/leave/reject/${id}`);
+      await API.put(`/leave/decide/${id}`, { status: 'rejected' });
       setPendingLeaves(pendingLeaves.filter(l => l._id !== id));
     } catch (error) {
       console.error('Error rejecting leave:', error);
