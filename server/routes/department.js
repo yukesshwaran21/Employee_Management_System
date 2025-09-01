@@ -5,7 +5,7 @@ const departmentController = require('../controllers/departmentController');
 
 // Admin: CRUD departments
 router.post('/', protect, authorize('admin', 'super-admin'), departmentController.createDepartment);
-router.get('/', protect, departmentController.getDepartments);
+router.get('/', departmentController.getDepartments);
 router.put('/:id', protect, authorize('admin', 'super-admin'), departmentController.updateDepartment);
 router.delete('/:id', protect, authorize('admin', 'super-admin'), departmentController.deleteDepartment);
 
