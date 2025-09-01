@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate, Routes, Route, Link } from 'react-router-dom';
 import EmployeeList from '../components/EmployeeList';
+import NotificationDropdown from '../components/NotificationDropdown';
 import PendingApprovals from '../components/PendingApprovals';
 import AttendanceSummary from '../components/AttendanceSummary';
 import OvertimeTrends from '../components/OvertimeTrends';
@@ -55,9 +56,7 @@ function AdminDashboard() {
                   </div>
                 </div>
                 <div className="dashboard-actions">
-                  <button className="btn-notification" title="Notifications" style={{ marginRight: '12px' }}>
-                    <span role="img" aria-label="Notifications">🔔</span>
-                  </button>
+                  <NotificationDropdown />
                   <button 
                     className="btn-secondary" 
                     onClick={() => navigate('/profile')}
