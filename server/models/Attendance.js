@@ -9,6 +9,8 @@ const AttendanceSchema = new mongoose.Schema({
   overtimeHours: { type: Number, default: 0 },
   ip: { type: String },
   location: { type: String },
+  isLate: { type: Boolean, default: false },
+  isEarly: { type: Boolean, default: false },
 });
 
 AttendanceSchema.index({ user: 1, date: 1 }, { unique: true });
