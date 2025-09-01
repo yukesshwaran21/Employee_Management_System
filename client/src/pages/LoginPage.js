@@ -10,11 +10,18 @@ function LoginPage() {
   const { dispatch, error, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const [verifyPrompt, setVerifyPrompt] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: 'SET_LOADING' });
+    setVerifyPrompt(false);
     try {
       const res = await API.post('/auth/login', { email, password });
+      if (res.data.user && res.data.user.status === 'pending' && !res.data.user.isEmailVerified) {
+        setVerifyPrompt(true);
+        dispatch({ type: 'SET_ERROR', payload: 'Please verify your email before logging in.' });
+        return;
+      }
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
       if (res.data.user.role === 'admin' || res.data.user.role === 'super-admin') {
         navigate('/admin');
@@ -33,14 +40,18 @@ function LoginPage() {
           <h2 className="auth-title">Welcome Back</h2>
           <p className="auth-subtitle">Sign in to your Employee Management account</p>
         </div>
-        
+        {verifyPrompt && (
+          <div className="auth-alert warning">
+            <span className="icon">⚠️</span>
+            Please check your email and verify your account before logging in.
+          </div>
+        )}
         {error && (
           <div className="auth-alert error">
             <span className="icon">⚠️</span>
             {error}
           </div>
         )}
-        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <input
@@ -53,7 +64,6 @@ function LoginPage() {
             />
             <span className="input-icon">📧</span>
           </div>
-          
           <div className="form-group">
             <input
               type="password"
@@ -65,18 +75,15 @@ function LoginPage() {
             />
             <span className="input-icon">🔒</span>
           </div>
-          
           <div className="remember-me">
             <input type="checkbox" id="remember" />
             <label htmlFor="remember">Remember me</label>
           </div>
-          
           <button type="submit" className="auth-button" disabled={loading}>
             {loading && <div className="loading-spinner"></div>}
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-        
         <div className="auth-link">
           Don't have an account? <a href="/register">Create Account</a>
         </div>
