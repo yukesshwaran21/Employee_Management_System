@@ -24,8 +24,20 @@ exports.generatePayroll = async (req, res) => {
     const punctualDays = attendances.filter(a => a.clockIn && a.clockIn.getHours() <= 9).length;
     if (punctualDays >= attendances.length * 0.9) bonus += 1000; // Example bonus
     // Performance bonus placeholder (can be expanded)
+
+    // Allowances (example: fixed or based on role)
+    const allowances = 2000; // Example fixed allowance
+    // Health insurance (example: fixed deduction)
+    const healthInsurance = 500;
+    // Tax deductions (example: 10% of base salary)
+    const taxDeductions = user.baseSalary * 0.1;
+    // Other deductions (example: fixed)
+    const deductions = healthInsurance + taxDeductions;
+
     // Calculate total salary
-    const totalSalary = user.baseSalary + overtime * (overtimeRate || 1.5) * (user.baseSalary / 160) + bonus;
+    const overtimePay = overtime * (overtimeRate || 1.5) * (user.baseSalary / 160);
+    const totalSalary = user.baseSalary + overtimePay + bonus + allowances;
+
     // Generate payslip PDF
     const doc = new PDFDocument();
     const payslipPath = `./payslips/${user._id}_${month}.pdf`;
@@ -37,7 +49,11 @@ exports.generatePayroll = async (req, res) => {
     doc.text(`Overtime Hours: ${overtime}`);
     doc.text(`Overtime Rate: ${overtimeRate || 1.5}`);
     doc.text(`Bonus: ${bonus}`);
+    doc.text(`Allowances: ${allowances}`);
+    doc.text(`Health Insurance: ${healthInsurance}`);
+    doc.text(`Tax Deductions: ${taxDeductions}`);
     doc.text(`Total Salary: ${totalSalary}`);
+    doc.text(`Deductions: ${deductions}`);
     doc.end();
     await Payroll.findOneAndUpdate(
       { user: user._id, month },
@@ -48,6 +64,10 @@ exports.generatePayroll = async (req, res) => {
         overtimeHours: overtime,
         overtimeRate: overtimeRate || 1.5,
         bonus,
+        allowances,
+        healthInsurance,
+        taxDeductions,
+        deductions,
         totalSalary,
         status: 'pending',
         payslip: payslipPath,
