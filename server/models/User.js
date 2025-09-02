@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
   department: { type: mongoose.Schema.Types.ObjectId, ref: 'Department' },
   designation: { type: String },
   status: { type: String, enum: ['pending', 'active', 'inactive', 'rejected'], default: 'pending' },
+  employeeId: { type: String, unique: true, sparse: true },
   isEmailVerified: { type: Boolean, default: false },
   profilePhoto: { type: String },
   leaveBalance: {
