@@ -28,14 +28,58 @@ exports.clockIn = async (req, res) => {
     const now = new Date();
     if (now.getHours() > shiftStart) isLate = true;
     if (now.getHours() < shiftStart) isEarly = true;
-    // Safely access location
-    const location = req.body && req.body.location ? req.body.location : '';
+    // Geofencing check
+    const WORKPLACE_LAT = 11.2739;
+    const WORKPLACE_LON = 77.6071;
+    let outOfRange = false;
+    let location = req.body && req.body.location ? req.body.location : null;
+    let distance = null;
+    if (location && location.latitude && location.longitude) {
+      // Haversine formula
+      function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+          0.5 - Math.cos(dLat)/2 + 
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+          (1 - Math.cos(dLon))/2;
+        return R * 2 * Math.asin(Math.sqrt(a));
+      }
+      distance = getDistanceFromLatLonInKm(
+        WORKPLACE_LAT,
+        WORKPLACE_LON,
+        location.latitude,
+        location.longitude
+      );
+      if (distance > 2) outOfRange = true;
+    }
+
+    if (outOfRange) {
+      // Use new notification utility
+      const { notifyUser, notifyAdmins } = require('../utils/notification');
+      // Notify employee (DB, email, SMS)
+      await notifyUser({
+        userId: req.user._id,
+        type: 'Geofence',
+        message: `Your clock-in attempt was blocked because you are ${distance.toFixed(2)} km away from the workplace.`,
+        email: req.user.email,
+        phone: req.user.phone,
+      });
+      // Notify all admins
+      await notifyAdmins({
+        type: 'Geofence',
+        message: `Employee ${req.user.name} (${req.user.email}) attempted to clock in from ${distance.toFixed(2)} km away.`
+      });
+      return res.status(403).json({ message: `Clock-in blocked: You are ${distance.toFixed(2)} km away from the workplace.` });
+    }
+
     attendance = new Attendance({
       user: req.user._id,
       date: today,
       clockIn: now,
       ip: req.ip,
-      location,
+      location: location ? `${location.latitude},${location.longitude}` : '',
       isLate,
       isEarly,
     });
