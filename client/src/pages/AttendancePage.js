@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../utils/api';
 import '../styles/AttendancePage.css';
+import GoBackButton from '../components/GoBackButton';
 
 function AttendancePage() {
   const [attendance, setAttendance] = useState([]);
@@ -102,6 +103,7 @@ function AttendancePage() {
       <div className="attendance-container fade-in">
         {/* Attendance Header */}
         <div className="attendance-header">
+          <GoBackButton />
           <h1 className="attendance-title">Time & Attendance</h1>
           <div className="current-time">{formatTime(currentTime)}</div>
           <div className="current-date">{formatDate(currentTime)}</div>
