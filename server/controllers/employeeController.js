@@ -17,10 +17,22 @@ exports.approveEmployee = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ message: 'User not found' });
   user.status = 'active';
+  // Generate unique employeeId if not present
+  if (!user.employeeId) {
+    // Format: EMP + 6-digit number (incremental or random, but unique)
+    let unique = false;
+    let employeeId;
+    while (!unique) {
+      employeeId = 'EMP' + Math.floor(100000 + Math.random() * 900000);
+      const exists = await User.findOne({ employeeId });
+      if (!exists) unique = true;
+    }
+    user.employeeId = employeeId;
+  }
   await user.save();
-  await sendEmail(user.email, 'Account Approved', '<p>Your account is approved. You can now login.</p>');
-  await AuditLog.create({ action: `Admin approved employee ${user.name}`, performedBy: req.user._id });
-  res.json({ message: 'Employee approved' });
+  await sendEmail(user.email, 'Account Approved', `<p>Your account is approved. Your Employee ID is <b>${user.employeeId}</b>. You can now login.</p>`);
+  await AuditLog.create({ action: `Admin approved employee ${user.name} (${user.employeeId})`, performedBy: req.user._id });
+  res.json({ message: 'Employee approved', employeeId: user.employeeId });
 };
 
 exports.deactivateEmployee = async (req, res) => {
