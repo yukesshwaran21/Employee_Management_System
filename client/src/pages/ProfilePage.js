@@ -237,7 +237,8 @@ function ProfilePage() {
                 accept="image/*"
                 className="form-input"
                 onChange={handleChange}
-                disabled={!isEditing}
+                style={{ cursor: isEditing ? 'pointer' : 'not-allowed', opacity: isEditing ? 1 : 0.5 }}
+                disabled={!isEditing ? true : false}
               />
               {form.profilePhoto && (
                 <div className="profile-photo-preview">
