@@ -5,15 +5,18 @@ const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, phone, department, designation } = req.body;
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: 'User already exists' });
-    // Enforce only one super-admin
-    if (req.body.role === 'super-admin') {
-      const superAdminExists = await User.findOne({ role: 'super-admin' });
-      if (superAdminExists) return res.status(403).json({ message: 'Super-admin already exists' });
+    const { name, email, password, phone, department, designation, role } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required.' });
     }
-    user = new User({ name, email, password, phone, department, designation, role: req.body.role });
+    let user = await User.findOne({ email });
+    if (user) return res.status(400).json({ message: 'User with this email already exists.' });
+    // Enforce only one super-admin
+    if (role === 'super-admin') {
+      const superAdminExists = await User.findOne({ role: 'super-admin' });
+      if (superAdminExists) return res.status(403).json({ message: 'Super-admin already exists.' });
+    }
+    user = new User({ name, email, password, phone, department, designation, role });
     await user.save();
     // Email verification token
     const verifyToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -25,7 +28,15 @@ exports.register = async (req, res) => {
     );
     res.status(201).json({ message: 'Registration successful. Please verify your email.' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    // Handle duplicate key error (MongoDB)
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+      return res.status(400).json({ message: 'Email already registered.' });
+    }
+    // Validation errors
+    if (err.name === 'ValidationError') {
+      return res.status(400).json({ message: err.message });
+    }
+    res.status(500).json({ message: 'Internal server error. Please try again later.' });
   }
 };
 
