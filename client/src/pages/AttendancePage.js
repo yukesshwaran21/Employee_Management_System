@@ -27,15 +27,27 @@ function AttendancePage() {
     setError('');
     setMessage('');
     setLoading(true);
-    try {
-      await API.post('/attendance/clockin');
-      setMessage('Successfully clocked in! Have a productive day! 🚀');
-      // Refresh attendance data
-      const res = await API.get('/attendance/me');
-      setAttendance(res.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Clock in failed');
-    } finally {
+    // Get geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          await API.post('/attendance/clockin', { location: { latitude, longitude } });
+          setMessage('Successfully clocked in! Have a productive day! 🚀');
+          // Refresh attendance data
+          const res = await API.get('/attendance/me');
+          setAttendance(res.data);
+        } catch (err) {
+          setError(err.response?.data?.message || 'Clock in failed');
+        } finally {
+          setLoading(false);
+        }
+      }, (error) => {
+        setError('Location access denied. Please enable location to clock in.');
+        setLoading(false);
+      });
+    } else {
+      setError('Geolocation is not supported by your browser.');
       setLoading(false);
     }
   };
