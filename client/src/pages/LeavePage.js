@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import API from '../utils/api';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/LeavePage.css';
+import GoBackButton from '../components/GoBackButton';
 
 function LeavePage() {
   const { user } = useContext(AuthContext);
@@ -68,6 +69,7 @@ function LeavePage() {
         {/* Leave Header */}
         <div className="leave-header">
           <h1 className="leave-title">Leave Management</h1>
+          <GoBackButton />
         </div>
 
         {/* Leave Balance Summary */}
