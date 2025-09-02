@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import API from '../utils/api';
 import '../styles/PayrollPage.css';
+import GoBackButton from '../components/GoBackButton';
 
 function PayrollPage() {
   const [payrolls, setPayrolls] = useState([]);
@@ -54,6 +55,7 @@ function PayrollPage() {
 
   return (
     <div className="payroll-wrapper">
+  <GoBackButton />
       <div className="payroll-container fade-in">
         {/* Payroll Header */}
         <div className="payroll-header">
