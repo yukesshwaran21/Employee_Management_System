@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import API from '../utils/api';
+import GoBackButton from '../components/GoBackButton';
 import '../styles/ProfilePage.css';
 
 function ProfilePage() {
@@ -65,6 +66,7 @@ function ProfilePage() {
 
   return (
     <div className="profile-wrapper">
+  <GoBackButton />
       <div className="profile-container fade-in">
         {/* Profile Header */}
         <div className="profile-header">
