@@ -8,6 +8,7 @@ import AttendanceSummary from '../components/AttendanceSummary';
 import OvertimeTrends from '../components/OvertimeTrends';
 import PayrollCost from '../components/PayrollCost';
 import ReportsExports from '../components/ReportsExports';
+import GoBackButton from '../components/GoBackButton';
 import '../styles/Dashboard.css';
 
 function AdminDashboard() {
@@ -45,6 +46,7 @@ function AdminDashboard() {
     <div className="dashboard-wrapper">
       <div className="dashboard-container admin-dashboard fade-in">
         {/* Admin Dashboard Header */}
+          <GoBackButton />
             <div className="dashboard-header">
               <div className="welcome-section">
                 <div className="user-info">
