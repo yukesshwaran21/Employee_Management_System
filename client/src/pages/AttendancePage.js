@@ -18,7 +18,13 @@ function AttendancePage() {
     // Fetch attendance data
     API.get('/attendance/me')
       .then(res => setAttendance(res.data))
-      .catch(() => setAttendance([]));
+      .catch((err) => {
+        if (err.response?.status === 403) {
+          setError('Access denied: You do not have permission to view attendance. Please check your role or login status.');
+        } else {
+          setAttendance([]);
+        }
+      });
 
     return () => clearInterval(timer);
   }, []);
@@ -38,7 +44,11 @@ function AttendancePage() {
           const res = await API.get('/attendance/me');
           setAttendance(res.data);
         } catch (err) {
-          setError(err.response?.data?.message || 'Clock in failed');
+          if (err.response?.status === 403) {
+            setError('Access denied: You do not have permission to clock in. Please check your role or login status.');
+          } else {
+            setError(err.response?.data?.message || 'Clock in failed');
+          }
         } finally {
           setLoading(false);
         }
