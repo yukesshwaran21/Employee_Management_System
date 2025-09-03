@@ -6,6 +6,7 @@ import '../styles/ProfilePage.css';
 function ProfilePage() {
   const { user, dispatch } = useContext(AuthContext);
   const [form, setForm] = useState(user || {});
+  const [avatarPreview, setAvatarPreview] = useState(user?.profilePhoto || '');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,6 +23,21 @@ function ProfilePage() {
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (e.target.name === 'profilePhoto') {
+      setAvatarPreview(e.target.value);
+    }
+  };
+
+  const handleAvatarUpload = e => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result);
+        setForm({ ...form, profilePhoto: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async e => {
@@ -59,10 +75,24 @@ function ProfilePage() {
         <div className="profile-header">
           <div className="profile-header-content">
             <div className="profile-avatar">
-              {form.profilePhoto ? (
-                <img src={form.profilePhoto} alt="Profile" />
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="Profile" />
               ) : (
                 getUserInitials(form.name)
+              )}
+              {isEditing && (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="avatar-upload"
+                    onChange={handleAvatarUpload}
+                  />
+                  <label htmlFor="avatar-upload" className="edit-avatar-btn" title="Upload new avatar">
+                    <span role="img" aria-label="Upload">📤</span>
+                  </label>
+                </>
               )}
             </div>
             
@@ -80,6 +110,7 @@ function ProfilePage() {
                 <button 
                   className="edit-button"
                   onClick={() => setIsEditing(true)}
+                  title="Edit your profile"
                 >
                   <span>✏️</span>
                   Edit Profile
@@ -88,6 +119,7 @@ function ProfilePage() {
                 <button 
                   className="edit-button"
                   onClick={handleCancel}
+                  title="Switch to view mode"
                 >
                   <span>👁️</span>
                   View Mode
@@ -169,69 +201,88 @@ function ProfilePage() {
           <form onSubmit={handleSubmit} className="profile-form">
             <div className="form-group">
               <label className="form-label">Full Name</label>
-              <input
-                name="name"
-                className="form-input"
-                value={form.name || ''}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                required
-                disabled={!isEditing}
-              />
+              <div className="input-icon-group">
+                <span className="input-icon" title="Name">👤</span>
+                <input
+                  name="name"
+                  className="form-input"
+                  value={form.name || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  required
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
 
             <div className="form-group">
               <label className="form-label">Email Address</label>
-              <input
-                name="email"
-                type="email"
-                className="form-input"
-                value={form.email || ''}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                required
-                disabled={true} // Email usually shouldn't be editable
-              />
+              <div className="input-icon-group">
+                <span className="input-icon" title="Email">📧</span>
+                <input
+                  name="email"
+                  type="email"
+                  className="form-input"
+                  value={form.email || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                  disabled={true} // Email usually shouldn't be editable
+                />
+              </div>
             </div>
 
             <div className="form-group">
               <label className="form-label">Phone Number</label>
-              <input
-                name="phone"
-                className="form-input"
-                value={form.phone || ''}
-                onChange={handleChange}
-                placeholder="Enter your phone number"
-                disabled={!isEditing}
-              />
+              <div className="input-icon-group">
+                <span className="input-icon" title="Phone">📱</span>
+                <input
+                  name="phone"
+                  className="form-input"
+                  value={form.phone || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your phone number"
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
 
             <div className="form-group">
               <label className="form-label">Job Designation</label>
-              <input
-                name="designation"
-                className="form-input"
-                value={form.designation || ''}
-                onChange={handleChange}
-                placeholder="Enter your job title"
-                disabled={!isEditing}
-              />
+              <div className="input-icon-group">
+                <span className="input-icon" title="Designation">💼</span>
+                <input
+                  name="designation"
+                  className="form-input"
+                  value={form.designation || ''}
+                  onChange={handleChange}
+                  placeholder="Enter your job title"
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Profile Photo URL</label>
-              <input
-                name="profilePhoto"
-                className="form-input"
-                value={form.profilePhoto || ''}
-                onChange={handleChange}
-                placeholder="Enter profile photo URL"
-                disabled={!isEditing}
-              />
+              <label className="form-label">Profile Photo URL
+                <span className="form-help" title="Paste a direct image URL or upload a photo above."> ⓘ </span>
+              </label>
+              <div className="input-icon-group">
+                <span className="input-icon" title="Photo URL">🌐</span>
+                <input
+                  name="profilePhoto"
+                  className="form-input"
+                  value={form.profilePhoto || ''}
+                  onChange={handleChange}
+                  placeholder="Enter profile photo URL"
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Bio / Description</label>
+              <label className="form-label">Bio / Description
+                <span className="form-help" title="Share a short description about yourself."> ⓘ </span>
+              </label>
               <textarea
                 name="bio"
                 className="form-input form-textarea"
