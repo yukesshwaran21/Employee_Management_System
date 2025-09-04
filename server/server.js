@@ -12,7 +12,10 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://employee-management-system-y69g.onrender.com'],
+  credentials: true
+}));
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -21,7 +24,11 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Routes
+// Ensure CORS headers for all API routes (including preflight)
+app.options('/api/*', cors({
+  origin: ['http://localhost:3000', 'https://employee-management-system-y69g.onrender.com'],
+  credentials: true
+}));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/employees', require('./routes/employee'));
 app.use('/api/attendance', require('./routes/attendance'));
