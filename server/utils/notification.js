@@ -8,9 +8,7 @@ const createNotification = async ({ userId, type, message }) => {
   await Notification.create({ user: userId, type, message });
 };
 
-/**
- * Send notification to user (DB, email, SMS)
- */
+
 const notifyUser = async ({ userId, type, message, email, phone }) => {
   // DB notification
   await createNotification({ userId, type, message });
