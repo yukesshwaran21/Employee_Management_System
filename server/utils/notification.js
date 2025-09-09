@@ -3,9 +3,7 @@ const sendEmail = require('./sendEmail');
 const sendSMS = require('./sendSMS');
 const User = require('../models/User');
 
-/**
- * Create a notification for a user
- */
+
 const createNotification = async ({ userId, type, message }) => {
   await Notification.create({ user: userId, type, message });
 };
